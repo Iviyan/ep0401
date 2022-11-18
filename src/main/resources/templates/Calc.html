@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+        .calc-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            width: 50%;
+            margin: 0 auto;
+            grid-gap: 8px;
+        }
+
+        .calc-form > label { text-align: center; }
+
+        .calc-form > p {
+            grid-column: span 2;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Калькулятор</h1>
+    <!--/*@thymesVar id="Operators" type="com.iv.ep0401k.controllers.CalcOperators"*/-->
+    <form id="calcForm" action="/" method="get" class="calc-form" th:with="Operators=${T(com.iv.ep0401k.controllers.CalcOperators)}">
+        <input type="text" name="a" style="grid-column: span 2" th:value="${a}" required />
+        <input type="text" name="b" style="grid-column: span 2" th:value="${b}" required />
+        <label><input type="radio" name="op" value="add" required th:checked="${op == Operators.ADD}">+</label>
+        <label><input type="radio" name="op" value="sub" th:checked="${op == Operators.SUB}">-</label>
+        <label><input type="radio" name="op" value="mul" th:checked="${op == Operators.MUL}">*</label>
+        <label><input type="radio" name="op" value="div" th:checked="${op == Operators.DIV}">/</label>
+
+        <button type="submit" style="grid-column: span 1" >Рассчитать (mvc)</button>
+        <button id="calcAjaxBtn" type="submit" value="" style="grid-column: span 1">Рассчитать (api)</button>
+        <p id="result" th:text="'Ответ: ' + ${result ?: ''}"></p>
+    </form>
+
+    <script>
+        const form = document.getElementById("calcForm");
+        const calcBtn = document.getElementById("calcAjaxBtn");
+        const result = document.getElementById("result");
+
+        form.addEventListener("submit", async (e) => { //console.log(e);
+            if (e.submitter === calcBtn) {
+                e.preventDefault();
+                let data = new FormData(form);
+
+                let response = await fetch('/api?' + new URLSearchParams(data));
+                let text = await response.text();
+
+                if (!response.ok) {
+                    console.log(response);
+                    result.innerText = `Ошибка запроса (${text})`;
+                } else {
+                    result.innerText = `Ответ: ${text}`;
+                }
+            }
+        })
+    </script>
+</body>
+</html>
