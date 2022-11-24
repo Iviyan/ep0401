@@ -6,10 +6,17 @@ import com.iv.ep0401k.models.BookRentalRepository
 import com.iv.ep0401k.models.BooksRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
 import java.util.*
+import javax.servlet.http.HttpServletResponse
+import kotlin.jvm.optionals.getOrNull
 
-@RestController
+@Controller
 class BooksController {
 
     @Autowired
@@ -18,52 +25,11 @@ class BooksController {
     @Autowired
     lateinit var bookRentalRepository: BookRentalRepository
 
-    @GetMapping("/books")
-    @ResponseBody
-    fun getBooks(@RequestParam(name = "title", required = false) title: String?): Iterable<Book> {
-        if (title == null) return booksRepository.findAll()
-        return booksRepository.findByTitleContainsIgnoreCase(title)
-    }
-
-    @GetMapping("/book-rental")
-    @ResponseBody
-    fun getBookRental(): Iterable<BookRental> {
-        return bookRentalRepository.findAll()
-    }
-
-    @PostMapping("/books")
-    fun addBook(
-        @RequestParam title: String,
-        @RequestParam author: String,
-        @RequestParam pageCount: Int,
-        @RequestParam @DateTimeFormat(pattern = "dd.MM.yyyy") releaseDate: Date,
-        @RequestParam description: String
-    ): Book {
-        var newBook = Book(0, title, author, pageCount, releaseDate, description)
-
-        newBook = booksRepository.save(newBook)
-
-        return newBook
-    }
-
-    @PostMapping("/book-rental")
-    fun addBookRental(
-        @RequestParam clientName: String,
-        @RequestParam bookId: Int,
-        @RequestParam @DateTimeFormat(pattern = "dd.MM.yyyy") startDate: Date,
-        @RequestParam @DateTimeFormat(pattern = "dd.MM.yyyy") endDate: Date,
-    ): BookRental {
-        var newBookRental = BookRental(0, clientName, bookId, startDate, endDate)
-
-        newBookRental = bookRentalRepository.save(newBookRental)
-
-        return newBookRental
-    }
-
-    /*@GetMapping("/")
-    fun Index(model: Model,
-                 @RequestParam(name = "title", required = false) title: String?
-    ) : Iterable<Book> {
+    @GetMapping("/")
+    fun Index(
+        model: Model,
+        @RequestParam(name = "title", required = false) title: String?
+    ): String {
         val books = if (title == null) booksRepository.findAll()
         else booksRepository.findByTitleContainsIgnoreCase(title)
 
@@ -74,6 +40,96 @@ class BooksController {
         model.addAttribute("bookRental", bookRental)
 
         return "Books"
-    }*/
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    @GetMapping("/books/{id}")
+    fun getBook(
+        @PathVariable(name = "id") id: Int,
+        model: Model,
+        response: HttpServletResponse
+    ): String {
+        val book = booksRepository.findById(id)
+        model.addAttribute("model", book)
+        model.addAttribute("book", book.getOrNull())
+        if (book.isEmpty) response.status = HttpStatus.NOT_FOUND.value()
+        return "Book"
+    }
+
+    @GetMapping("/books/new")
+    fun addBook(model: Model): String {
+        model.addAttribute("book", Book(0, "", "", 0, LocalDate.now(), ""))
+        return "NewBook"
+    }
+
+    @PostMapping("/books")
+    fun addBook(book: Book): String {
+        booksRepository.save(book)
+
+        return "redirect:/"
+    }
+
+    @PostMapping("/books/{id}")
+    fun editBook(
+        @PathVariable(name = "id") id: Int,
+        @ModelAttribute book: Book
+    ): String {
+        book.id = id
+        booksRepository.save(book)
+
+        return "redirect:/"
+    }
+
+    @GetMapping("/books/{id}/delete")
+    fun deleteBook(@PathVariable(name = "id") id: Int): String {
+        booksRepository.deleteById(id)
+        return "redirect:/"
+    }
+
+    // ---
+
+    @OptIn(ExperimentalStdlibApi::class)
+    @GetMapping("/book-rental/{id}")
+    fun getBookRental(
+        @PathVariable(name = "id") id: Int,
+        model: Model,
+        response: HttpServletResponse
+    ): String {
+        val bookRental = bookRentalRepository.findById(id)
+        model.addAttribute("model", bookRental)
+        model.addAttribute("bookRental", bookRental.getOrNull())
+        if (bookRental.isEmpty) response.status = HttpStatus.NOT_FOUND.value()
+        return "BookRental"
+    }
+
+    @GetMapping("/book-rental/new")
+    fun addBookRental(model: Model): String {
+        model.addAttribute("bookRental", BookRental(0, "", 0, LocalDate.now(), LocalDate.now()))
+        return "NewBookRental"
+    }
+
+    @PostMapping("/book-rental")
+    fun addBookRental(bookRental: BookRental): String {
+        bookRentalRepository.save(bookRental)
+
+        return "redirect:/"
+    }
+
+    @PostMapping("/book-rental/{id}")
+    fun editBookRental(
+        @PathVariable(name = "id") id: Int,
+        @ModelAttribute bookRental: BookRental
+    ): String {
+        bookRental.id = id
+        bookRentalRepository.save(bookRental)
+
+        return "redirect:/"
+    }
+
+    @GetMapping("/book-rental/{id}/delete")
+    fun deleteBookRental(@PathVariable(name = "id") id: Int): String {
+        bookRentalRepository.deleteById(id)
+        return "redirect:/"
+    }
 
 }

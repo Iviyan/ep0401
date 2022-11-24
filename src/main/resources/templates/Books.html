@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+            crossorigin="anonymous"></script>
+
+    <style>
+        /*.table th { text-align: center; }*/
+    </style>
+</head>
+<body>
+
+<div th:insert="Templates :: header"></div>
+
+<h1 class="fs-2 text-center">Книги</h1>
+
+<div class="px-5 mt-3">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Название</th>
+            <th scope="col">Автор</th>
+            <th scope="col">Количество страниц</th>
+            <th scope="col">Дата выпуска</th>
+            <th scope="col">Описание</th>
+            <th scope="col">Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--/*@thymesVar id="book" type="com.iv.ep0401k.models.Book"*/-->
+        <tr th:each="book : ${books}">
+            <td th:text="${book.id}"></td>
+            <td th:text="${book.title}"></td>
+            <td th:text="${book.author}"></td>
+            <td th:text="${book.pageCount}"></td>
+            <td th:text="${book.releaseDate}"></td>
+            <td th:text="${book.description}"></td>
+            <td>
+                <a class="btn btn-outline-primary" th:href="'/books/' + ${book.id}">Изменить</a>
+                <a class="btn btn-outline-danger" th:href="'/books/' + ${book.id} + '/delete'">Удалить</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a class="btn btn-outline-primary" href="/books/new">Добавить</a>
+</div>
+
+<h1 class="fs-2 text-center">Прокат книг</h1>
+
+<div class="px-5 mt-3">
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Имя клиента</th>
+            <th scope="col">Id книги</th>
+            <th scope="col">Дата начала</th>
+            <th scope="col">Дата конца</th>
+            <th scope="col">Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--/*@thymesVar id="rental" type="com.iv.ep0401k.models.BookRental"*/-->
+        <tr th:each="rental : ${bookRental}">
+            <td th:text="${rental.id}"></td>
+            <td th:text="${rental.clientName}"></td>
+            <td th:text="${rental.bookId}"></td>
+            <td th:text="${rental.startDate}"></td>
+            <td th:text="${rental.endDate}"></td>
+            <td>
+                <a class="btn btn-outline-primary" th:href="'/book-rental/' + ${rental.id}">Изменить</a>
+                <a class="btn btn-outline-danger" th:href="'/book-rental/' + ${rental.id} + '/delete'">Удалить</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a class="btn btn-outline-primary" href="/book-rental/new">Добавить</a>
+</div>
+
+</body>
+</html>
