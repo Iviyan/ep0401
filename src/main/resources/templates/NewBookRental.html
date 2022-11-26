@@ -9,9 +9,7 @@
             integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
             crossorigin="anonymous"></script>
 
-    <style>
-
-    </style>
+    <style> .invalid-feedback { display: block; } </style>
 </head>
 
 <!--/*@thymesVar id="bookRental" type="com.iv.ep0401k.models.BookRental"*/-->
@@ -19,7 +17,7 @@
 
 <div th:insert="Templates :: header"></div>
 
-<h1 class="fs-2 text-center">Аренда книги</h1>
+<h1 class="fs-2 text-center">Прокат книги</h1>
 
 <div class="px-5 mt-3" >
 
@@ -28,18 +26,22 @@
         <div class="mb-3">
             <label class="form-label">Имя клиента</label>
             <input class="form-control" th:field="*{clientName}">
+            <div th:if="${#fields.hasErrors('clientName')}" th:errors="*{clientName}" class="invalid-feedback"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Id книги</label>
             <input class="form-control" th:field="*{bookId}">
+            <div th:if="${#fields.hasErrors('bookId')}" th:errors="*{bookId}" class="invalid-feedback"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Дата начала</label>
             <input class="form-control" th:field="*{startDate}">
+            <div th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}" class="invalid-feedback"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Дата конца</label>
             <input class="form-control" th:field="*{endDate}">
+            <div th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}" class="invalid-feedback"></div>
         </div>
         <button type="submit" class="btn btn-outline-primary">Добавить</button>
         <a class="btn btn-outline-danger ms-3" th:href="'/book-rental/' + ${bookRental.id} + '/delete'">Удалить</a>

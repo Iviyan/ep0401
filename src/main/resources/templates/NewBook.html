@@ -9,9 +9,7 @@
             integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
             crossorigin="anonymous"></script>
 
-    <style>
-
-    </style>
+    <style> .invalid-feedback { display: block; } </style>
 </head>
 
 <!--/*@thymesVar id="book" type="java.util.Optional<iv.ep0401k.models.Book>"*/-->
@@ -24,26 +22,31 @@
 <div class="px-5 mt-3">
 
     <form method="post" action="/books" th:object="${book}">
-        <input type="hidden" th:field="*{id}">
+        <!--<input type="hidden" th:field="*{id}">-->
         <div class="mb-3">
             <label class="form-label">Название</label>
             <input class="form-control" th:field="*{title}">
+            <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="invalid-feedback"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Автор</label>
             <input class="form-control" th:field="*{author}">
+            <div th:if="${#fields.hasErrors('author')}" th:errors="*{author}" class="invalid-feedback"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Количество страниц</label>
             <input class="form-control" th:field="*{pageCount}">
+            <div th:if="${#fields.hasErrors('pageCount')}" th:errors="*{pageCount}" class="invalid-feedback"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Дата выпуска</label>
             <input class="form-control" th:field="*{releaseDate}">
+            <div th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}" class="invalid-feedback"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Описание</label>
             <textarea class="form-control" th:field="*{description}"></textarea>
+            <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="invalid-feedback"></div>
         </div>
         <button type="submit" class="btn btn-outline-primary" >Добавить</button>
     </form>

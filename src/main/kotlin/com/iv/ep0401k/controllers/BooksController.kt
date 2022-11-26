@@ -5,15 +5,14 @@ import com.iv.ep0401k.models.BookRental
 import com.iv.ep0401k.models.BookRentalRepository
 import com.iv.ep0401k.models.BooksRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
-import java.time.LocalDate
 import java.util.*
 import javax.servlet.http.HttpServletResponse
+import javax.validation.Valid
 import kotlin.jvm.optionals.getOrNull
 
 @Controller
@@ -57,13 +56,12 @@ class BooksController {
     }
 
     @GetMapping("/books/new")
-    fun addBook(model: Model): String {
-        model.addAttribute("book", Book(0, "", "", 0, LocalDate.now(), ""))
-        return "NewBook"
-    }
+    fun addBook(book: Book): String = "NewBook"
 
     @PostMapping("/books")
-    fun addBook(book: Book): String {
+    fun addBook(@Valid book: Book, bindingResult: BindingResult): String {
+        if (bindingResult.hasErrors()) return "NewBook"
+
         booksRepository.save(book)
 
         return "redirect:/"
@@ -72,8 +70,14 @@ class BooksController {
     @PostMapping("/books/{id}")
     fun editBook(
         @PathVariable(name = "id") id: Int,
-        @ModelAttribute book: Book
+        @Valid book: Book, bindingResult: BindingResult,
+        model: Model
     ): String {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("model", Optional.of(book))
+            return "Book"
+        }
+
         book.id = id
         booksRepository.save(book)
 
@@ -103,13 +107,12 @@ class BooksController {
     }
 
     @GetMapping("/book-rental/new")
-    fun addBookRental(model: Model): String {
-        model.addAttribute("bookRental", BookRental(0, "", 0, LocalDate.now(), LocalDate.now()))
-        return "NewBookRental"
-    }
+    fun addBookRental(bookRental: BookRental): String = "NewBookRental"
 
     @PostMapping("/book-rental")
-    fun addBookRental(bookRental: BookRental): String {
+    fun addBookRental(@Valid bookRental: BookRental, bindingResult: BindingResult): String {
+        if (bindingResult.hasErrors()) return "NewBookRental"
+
         bookRentalRepository.save(bookRental)
 
         return "redirect:/"
@@ -118,8 +121,14 @@ class BooksController {
     @PostMapping("/book-rental/{id}")
     fun editBookRental(
         @PathVariable(name = "id") id: Int,
-        @ModelAttribute bookRental: BookRental
+        @Valid bookRental: BookRental, bindingResult: BindingResult,
+        model: Model
     ): String {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("model", Optional.of(bookRental))
+            return "BookRental"
+        }
+
         bookRental.id = id
         bookRentalRepository.save(bookRental)
 
