@@ -22,16 +22,21 @@
 <div class="px-5 mt-3" >
 
     <form method="post" action="/book-rental" th:object="${bookRental}">
-        <input type="hidden" th:field="*{id}">
-        <div class="mb-3">
-            <label class="form-label">Имя клиента</label>
-            <input class="form-control" th:field="*{clientName}">
-            <div th:if="${#fields.hasErrors('clientName')}" th:errors="*{clientName}" class="invalid-feedback"></div>
+        <div class="form-floating mb-3">
+            <select class="form-select" title="Please select book" name="clientId" th:field="*{client}">
+                <!--/*@thymesVar id="c" type="com.iv.ep0401k.models.ClientDto"*/-->
+                <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.fullName}"></option>
+            </select>
+            <label >Выбор клиента</label>
+            <div th:if="${#fields.hasErrors('client')}" th:errors="*{client}" class="invalid-feedback"></div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Id книги</label>
-            <input class="form-control" th:field="*{bookId}">
-            <div th:if="${#fields.hasErrors('bookId')}" th:errors="*{bookId}" class="invalid-feedback"></div>
+        <div class="form-floating mb-3">
+            <select class="form-select" title="Please select book" name="bookId" th:field="*{book}">
+                <!--/*@thymesVar id="b" type="com.iv.ep0401k.models.Book"*/-->
+                <option th:each="b : ${books}" th:value="${b.id}" th:text="${b.title}" ></option>
+            </select>
+            <label >Выбор книги</label>
+            <div th:if="${#fields.hasErrors('book')}" th:errors="*{book}" class="invalid-feedback"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Дата начала</label>
@@ -44,7 +49,6 @@
             <div th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}" class="invalid-feedback"></div>
         </div>
         <button type="submit" class="btn btn-outline-primary">Добавить</button>
-        <a class="btn btn-outline-danger ms-3" th:href="'/book-rental/' + ${bookRental.id} + '/delete'">Удалить</a>
     </form>
 </div>
 </body>

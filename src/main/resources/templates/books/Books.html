@@ -59,7 +59,7 @@
         <tr>
             <th scope="col">Id</th>
             <th scope="col">Имя клиента</th>
-            <th scope="col">Id книги</th>
+            <th scope="col">Книга</th>
             <th scope="col">Дата начала</th>
             <th scope="col">Дата конца</th>
             <th scope="col">Действия</th>
@@ -69,8 +69,8 @@
         <!--/*@thymesVar id="rental" type="com.iv.ep0401k.models.BookRental"*/-->
         <tr th:each="rental : ${bookRental}">
             <td th:text="${rental.id}"></td>
-            <td th:text="${rental.clientName}"></td>
-            <td th:text="${rental.bookId}"></td>
+            <td th:text="${rental.client.fullName}"></td>
+            <td th:text="${rental.book.title}"></td>
             <td th:text="${rental.startDate}"></td>
             <td th:text="${rental.endDate}"></td>
             <td>

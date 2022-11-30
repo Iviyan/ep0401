@@ -1,5 +1,7 @@
 package com.iv.ep0401k.models
 
+import org.springframework.data.jpa.repository.Query
+
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.format.annotation.DateTimeFormat
@@ -30,6 +32,17 @@ class Book(
     var releaseDate: LocalDate = LocalDate.now(),
     @Column(name = "description")
     var description: String = "",
+
+    @OneToMany(mappedBy="book")
+    var rental: MutableSet<BookRental>? = null,
+
+    @ManyToMany()
+    @JoinTable(
+        name = "book_rental",
+        joinColumns = [ JoinColumn(name = "book_id") ],
+        inverseJoinColumns = [ JoinColumn(name = "client_id") ],
+    )
+    var clients: MutableSet<Client>? = null
 )
 
 @Repository

@@ -1,9 +1,6 @@
 package com.iv.ep0401k.controllers
 
-import com.iv.ep0401k.models.Book
-import com.iv.ep0401k.models.BookRental
-import com.iv.ep0401k.models.BookRentalRepository
-import com.iv.ep0401k.models.BooksRepository
+import com.iv.ep0401k.models.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
@@ -20,6 +17,8 @@ class BooksController {
 
     @Autowired
     lateinit var booksRepository: BooksRepository
+    @Autowired
+    lateinit var clientsRepository: ClientsRepository
 
     @Autowired
     lateinit var bookRentalRepository: BookRentalRepository
@@ -38,7 +37,7 @@ class BooksController {
         model.addAttribute("books", books)
         model.addAttribute("bookRental", bookRental)
 
-        return "Books"
+        return "books/Books"
     }
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -52,15 +51,15 @@ class BooksController {
         model.addAttribute("model", book)
         model.addAttribute("book", book.getOrNull())
         if (book.isEmpty) response.status = HttpStatus.NOT_FOUND.value()
-        return "Book"
+        return "books/Book"
     }
 
     @GetMapping("/books/new")
-    fun addBook(book: Book): String = "NewBook"
+    fun addBook(book: Book): String = "books/NewBook"
 
     @PostMapping("/books")
     fun addBook(@Valid book: Book, bindingResult: BindingResult): String {
-        if (bindingResult.hasErrors()) return "NewBook"
+        if (bindingResult.hasErrors()) return "books/NewBook"
 
         booksRepository.save(book)
 
@@ -75,7 +74,7 @@ class BooksController {
     ): String {
         if (bindingResult.hasErrors()) {
             model.addAttribute("model", Optional.of(book))
-            return "Book"
+            return "books/Book"
         }
 
         book.id = id
@@ -99,19 +98,39 @@ class BooksController {
         model: Model,
         response: HttpServletResponse
     ): String {
+        val books = booksRepository.findAll()
+        val clients = clientsRepository.findAll()
+        model.addAttribute("books", books)
+        model.addAttribute("clients", clients.map { ClientDto.from(it) })
+
         val bookRental = bookRentalRepository.findById(id)
         model.addAttribute("model", bookRental)
         model.addAttribute("bookRental", bookRental.getOrNull())
         if (bookRental.isEmpty) response.status = HttpStatus.NOT_FOUND.value()
-        return "BookRental"
+        return "books/BookRental"
     }
 
     @GetMapping("/book-rental/new")
-    fun addBookRental(bookRental: BookRental): String = "NewBookRental"
+    fun addBookRental(bookRental: BookRental, model: Model): String {
+        val books = booksRepository.findAll()
+        val clients = clientsRepository.findAll()
+        model.addAttribute("books", books)
+        model.addAttribute("clients", clients.map { ClientDto.from(it) })
+
+        return "books/NewBookRental"
+    }
 
     @PostMapping("/book-rental")
-    fun addBookRental(@Valid bookRental: BookRental, bindingResult: BindingResult): String {
-        if (bindingResult.hasErrors()) return "NewBookRental"
+    fun addBookRental(
+        @Valid bookRental: BookRental, bindingResult: BindingResult,
+        model: Model
+    ): String {
+        val books = booksRepository.findAll()
+        val clients = clientsRepository.findAll()
+        model.addAttribute("books", books)
+        model.addAttribute("clients", clients.map { ClientDto.from(it) })
+
+        if (bindingResult.hasErrors()) return "books/NewBookRental"
 
         bookRentalRepository.save(bookRental)
 
@@ -124,9 +143,14 @@ class BooksController {
         @Valid bookRental: BookRental, bindingResult: BindingResult,
         model: Model
     ): String {
+        val books = booksRepository.findAll()
+        val clients = clientsRepository.findAll()
+        model.addAttribute("books", books)
+        model.addAttribute("clients", clients.map { ClientDto.from(it) })
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("model", Optional.of(bookRental))
-            return "BookRental"
+            return "books/BookRental"
         }
 
         bookRental.id = id
