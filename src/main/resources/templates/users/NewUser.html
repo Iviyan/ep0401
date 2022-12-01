@@ -14,7 +14,7 @@
     } </style>
 </head>
 
-<!--/*@thymesVar id="client" type="java.util.Optional<com.iv.ep0401k.models.ClientDto>"*/-->
+<!--/*@thymesVar id="user" type="java.util.Optional<com.iv.ep0401k.models.ClientDto>"*/-->
 <body>
 
 <div th:insert="Templates :: header"></div>
@@ -22,7 +22,25 @@
 <h1 class="fs-2 text-center">Добавление клиента</h1>
 
 <div class="px-5 mt-3">
-    <form method="post" action="/clients" th:object="${client}">
+    <form method="post" action="/users" th:object="${user}">
+        <div class="mb-3">
+            <label class="form-label">Логин</label>
+            <input class="form-control" th:field="*{login}">
+            <div th:if="${#fields.hasErrors('login')}" th:errors="*{login}" class="invalid-feedback"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Пароль</label>
+            <input class="form-control" th:field="*{password}">
+            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="invalid-feedback"></div>
+        </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" title="Please select role" th:field="*{role}">
+                <!--/*@thymesVar id="r" type="com.iv.ep0401k.models.Role"*/-->
+                <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}"></option>
+            </select>
+            <label >Выбор роли</label>
+            <div th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="invalid-feedback"></div>
+        </div>
         <div class="mb-3">
             <label class="form-label">Имя</label>
             <input class="form-control" th:field="*{firstName}">

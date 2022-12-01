@@ -17,8 +17,9 @@ class BooksController {
 
     @Autowired
     lateinit var booksRepository: BooksRepository
+
     @Autowired
-    lateinit var clientsRepository: ClientsRepository
+    lateinit var usersRepository: UsersRepository
 
     @Autowired
     lateinit var bookRentalRepository: BookRentalRepository
@@ -99,9 +100,9 @@ class BooksController {
         response: HttpServletResponse
     ): String {
         val books = booksRepository.findAll()
-        val clients = clientsRepository.findAll()
+        val users = usersRepository.findAll()
         model.addAttribute("books", books)
-        model.addAttribute("clients", clients.map { ClientDto.from(it) })
+        model.addAttribute("users", users.map { UserDto.from(it) })
 
         val bookRental = bookRentalRepository.findById(id)
         model.addAttribute("model", bookRental)
@@ -113,9 +114,9 @@ class BooksController {
     @GetMapping("/book-rental/new")
     fun addBookRental(bookRental: BookRental, model: Model): String {
         val books = booksRepository.findAll()
-        val clients = clientsRepository.findAll()
+        val users = usersRepository.findAll()
         model.addAttribute("books", books)
-        model.addAttribute("clients", clients.map { ClientDto.from(it) })
+        model.addAttribute("users", users.map { UserDto.from(it) })
 
         return "books/NewBookRental"
     }
@@ -126,9 +127,9 @@ class BooksController {
         model: Model
     ): String {
         val books = booksRepository.findAll()
-        val clients = clientsRepository.findAll()
+        val users = usersRepository.findAll()
         model.addAttribute("books", books)
-        model.addAttribute("clients", clients.map { ClientDto.from(it) })
+        model.addAttribute("users", users.map { UserDto.from(it) })
 
         if (bindingResult.hasErrors()) return "books/NewBookRental"
 
@@ -144,9 +145,9 @@ class BooksController {
         model: Model
     ): String {
         val books = booksRepository.findAll()
-        val clients = clientsRepository.findAll()
+        val users = usersRepository.findAll()
         model.addAttribute("books", books)
-        model.addAttribute("clients", clients.map { ClientDto.from(it) })
+        model.addAttribute("users", users.map { UserDto.from(it) })
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("model", Optional.of(bookRental))

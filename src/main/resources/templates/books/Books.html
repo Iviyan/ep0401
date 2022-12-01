@@ -69,7 +69,7 @@
         <!--/*@thymesVar id="rental" type="com.iv.ep0401k.models.BookRental"*/-->
         <tr th:each="rental : ${bookRental}">
             <td th:text="${rental.id}"></td>
-            <td th:text="${rental.client.fullName}"></td>
+            <td th:text="${rental.user.fullName}"></td>
             <td th:text="${rental.book.title}"></td>
             <td th:text="${rental.startDate}"></td>
             <td th:text="${rental.endDate}"></td>

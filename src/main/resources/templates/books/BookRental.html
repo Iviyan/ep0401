@@ -26,12 +26,12 @@
 
     <form method="post" th:action="'/book-rental/' + ${bookRental.id}" th:object="${bookRental}">
         <div class="form-floating mb-3">
-            <select class="form-select" title="Please select book" name="clientId" th:field="*{client}">
-                <!--/*@thymesVar id="c" type="com.iv.ep0401k.models.ClientDto"*/-->
-                <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.fullName}"></option>
+            <select class="form-select" title="Please select book" name="userId" th:field="*{user}">
+                <!--/*@thymesVar id="c" type="com.iv.ep0401k.models.UserDto"*/-->
+                <option th:each="c : ${users}" th:value="${c.id}" th:text="${c.fullName}"></option>
             </select>
             <label >Выбор клиента</label>
-            <div th:if="${#fields.hasErrors('client')}" th:errors="*{client}" class="invalid-feedback"></div>
+            <div th:if="${#fields.hasErrors('user')}" th:errors="*{user}" class="invalid-feedback"></div>
         </div>
         <div class="form-floating mb-3">
             <select class="form-select" title="Please select book" name="bookId" th:field="*{book}">

@@ -17,13 +17,15 @@
 
 <div th:insert="Templates :: header"></div>
 
-<h1 class="fs-2 text-center">Книги</h1>
+<h1 class="fs-2 text-center">Пользователи</h1>
 
 <div class="px-5 mt-3">
     <table class="table">
         <thead>
         <tr>
             <th scope="col">Id</th>
+            <th scope="col">Логин</th>
+            <th scope="col">Роль</th>
             <th scope="col">ФИО</th>
             <th scope="col">Пасспорт</th>
             <th scope="col">Дата регистрации</th>
@@ -31,20 +33,22 @@
         </tr>
         </thead>
         <tbody>
-        <!--/*@thymesVar id="client" type="com.iv.ep0401k.models.ClientDto"*/-->
-        <tr th:each="client : ${clients}">
-            <td th:text="${client.id}"></td>
-            <td th:text="${client.fullName}"></td>
-            <td th:text="${client.serialAndNumber}"></td>
-            <td th:text="${client.registrationDate}"></td>
+        <!--/*@thymesVar id="user" type="com.iv.ep0401k.models.UserDto"*/-->
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.login}"></td>
+            <td th:text="${user.role.name}"></td>
+            <td th:text="${user.fullName}"></td>
+            <td th:text="${user.serialAndNumber}"></td>
+            <td th:text="${user.registrationDate}"></td>
             <td>
-                <a class="btn btn-outline-primary" th:href="'/clients/' + ${client.id}">Изменить</a>
-                <a class="btn btn-outline-danger" th:href="'/clients/' + ${client.id} + '/delete'">Удалить</a>
+                <a class="btn btn-outline-primary" th:href="'/users/' + ${user.id}">Изменить</a>
+                <a class="btn btn-outline-danger" th:href="'/users/' + ${user.id} + '/delete'">Удалить</a>
             </td>
         </tr>
         </tbody>
     </table>
-    <a class="btn btn-outline-primary" href="/clients/new">Добавить</a>
+    <a class="btn btn-outline-primary" href="/users/new">Добавить</a>
 </div>
 
 </body>

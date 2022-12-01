@@ -22,7 +22,25 @@
 
 <div class="px-5 mt-3" th:if="${model.isPresent()}">
 
-    <form method="post" th:action="'/clients/' + ${client.id}" th:object="${client}">
+    <form method="post" th:action="'/users/' + ${user.id}" th:object="${user}">
+        <div class="mb-3">
+            <label class="form-label">Логин</label>
+            <input class="form-control" th:field="*{login}">
+            <div th:if="${#fields.hasErrors('login')}" th:errors="*{login}" class="invalid-feedback"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Пароль</label>
+            <input class="form-control" th:field="*{password}">
+            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="invalid-feedback"></div>
+        </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" title="Please select role" th:field="*{role}">
+                <!--/*@thymesVar id="r" type="com.iv.ep0401k.models.Role"*/-->
+                <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}"></option>
+            </select>
+            <label >Выбор роли</label>
+            <div th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="invalid-feedback"></div>
+        </div>
         <div class="mb-3">
             <label class="form-label">Имя</label>
             <input class="form-control" th:field="*{firstName}">
@@ -55,7 +73,7 @@
         </div>
 
         <button type="submit" class="btn btn-outline-primary">Изменить</button>
-        <a class="btn btn-outline-danger ms-3" th:href="'/clients/' + ${client.id} + '/delete'">Удалить</a>
+        <a class="btn btn-outline-danger ms-3" th:href="'/users/' + ${user.id} + '/delete'">Удалить</a>
     </form>
 </div>
 </body>

@@ -1,7 +1,5 @@
 package com.iv.ep0401k.models
 
-import org.springframework.data.jpa.repository.Query
-
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.format.annotation.DateTimeFormat
@@ -40,9 +38,9 @@ class Book(
     @JoinTable(
         name = "book_rental",
         joinColumns = [ JoinColumn(name = "book_id") ],
-        inverseJoinColumns = [ JoinColumn(name = "client_id") ],
+        inverseJoinColumns = [ JoinColumn(name = "user_id") ],
     )
-    var clients: MutableSet<Client>? = null
+    var users: MutableSet<User>? = null
 )
 
 @Repository
