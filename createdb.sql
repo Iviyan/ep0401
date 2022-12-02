@@ -23,7 +23,7 @@ create table users
 (
     id serial primary key,
     login varchar(30) not null unique,
-    password varchar(50) not null,
+    password text not null,
     passport_id int not null references passports(id),
     role_id int not null references roles(id),
     registration_date timestamptz not null
@@ -70,6 +70,6 @@ VALUES ('1234', '567890', 'Иван', 'Иванов', 'Иванович')
 select * from users;
 select * from passports;
 select * from roles;
-insert into roles(id, name) values (1, 'admin'), (2, 'user');
+insert into roles(id, name) values (1, 'admin'), (2, 'user'), (3, 'salesman');
 insert into users(login, password, passport_id, role_id, registration_date)
 VALUES ('admin', 'admin', 1, 1, '01.01.2022');*/

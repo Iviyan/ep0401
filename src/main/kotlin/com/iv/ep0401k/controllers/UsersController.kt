@@ -3,6 +3,8 @@ package com.iv.ep0401k.controllers
 import com.iv.ep0401k.models.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.annotation.Secured
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -15,7 +17,7 @@ import javax.validation.Valid
 import kotlin.jvm.optionals.getOrNull
 
 
-@Controller
+@Controller @PreAuthorize("hasAnyAuthority('admin')")
 class UsersController {
 
     @Autowired
@@ -26,39 +28,6 @@ class UsersController {
 
     @Autowired
     lateinit var rolesRepository: RolesRepository
-
-    @Autowired
-    lateinit var booksRepository: BooksRepository
-
-    @Autowired
-    lateinit var passwordEncoder: PasswordEncoder
-
-
-    @GetMapping("/register")
-    private fun registration(model: Model): String? {
-        model.addAttribute("user", UserDto())
-        return "Register"
-    }
-
-    @PostMapping("/register")
-    private fun registration(@ModelAttribute("user") @Valid user: UserDto, bindingResult: BindingResult, model: Model): String? {
-        if (bindingResult.hasErrors()) return "/Register"
-
-        val userFromDb: User? = usersRepository.findByLogin(user.login)
-        if (userFromDb != null) {
-            bindingResult.addError(FieldError("user", "login", "Пользователь с таким логином уже существует"))
-            return "/Register"
-        }
-
-        user.role = Role(id = Roles.USER.id)
-        user.password = passwordEncoder.encode(user.password)
-
-        val userEntity = user.toUser()
-        passportsRepository.save(userEntity.passport)
-        usersRepository.save(userEntity)
-        return "redirect:/login"
-    }
-
 
     @GetMapping("/users")
     fun Index(model: Model): Any {
@@ -152,7 +121,9 @@ class UsersController {
 
     @GetMapping("/users/{id}/delete")
     fun deleteUser(@PathVariable(name = "id") id: Int): String {
+        val passportId = usersRepository.findById(id).orElseThrow().passport.id
         usersRepository.deleteById(id)
+        passportsRepository.deleteById(passportId)
         return "redirect:/users"
     }
 }

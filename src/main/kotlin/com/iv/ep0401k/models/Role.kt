@@ -26,6 +26,7 @@ class Role(
 enum class Roles(val id: Int) {
     ADMIN(1),
     USER(2),
+    SALESMAN(3)
 }
 
 @Repository

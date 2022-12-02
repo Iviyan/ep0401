@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.NoOpPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
@@ -20,7 +21,8 @@ import org.springframework.security.web.SecurityFilterChain
 class SecurityConfig {
 
     @Bean
-    fun getPasswordEncoder(): PasswordEncoder = NoOpPasswordEncoder.getInstance()//BCryptPasswordEncoder(8)
+    fun getPasswordEncoder(): PasswordEncoder = BCryptPasswordEncoder(8)
+    //fun getPasswordEncoder(): PasswordEncoder = NoOpPasswordEncoder.getInstance()
 
     @Bean
     fun authManager(

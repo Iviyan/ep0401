@@ -3,6 +3,8 @@ package com.iv.ep0401k.controllers
 import com.iv.ep0401k.models.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.annotation.Secured
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -24,8 +26,8 @@ class BooksController {
     @Autowired
     lateinit var bookRentalRepository: BookRentalRepository
 
-    @GetMapping("/")
-    fun Index(
+    @GetMapping("/") @PreAuthorize("hasAnyAuthority('admin', 'user', 'salesman')")
+    fun index(
         model: Model,
         @RequestParam(name = "title", required = false) title: String?
     ): String {
@@ -42,7 +44,7 @@ class BooksController {
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    @GetMapping("/books/{id}")
+    @GetMapping("/books/{id}") @PreAuthorize("hasAnyAuthority('admin', 'salesman')")
     fun getBook(
         @PathVariable(name = "id") id: Int,
         model: Model,
@@ -55,10 +57,10 @@ class BooksController {
         return "books/Book"
     }
 
-    @GetMapping("/books/new")
+    @GetMapping("/books/new") @PreAuthorize("hasAnyAuthority('admin', 'salesman')")
     fun addBook(book: Book): String = "books/NewBook"
 
-    @PostMapping("/books")
+    @PostMapping("/books") @Secured("admin", "salesman")
     fun addBook(@Valid book: Book, bindingResult: BindingResult): String {
         if (bindingResult.hasErrors()) return "books/NewBook"
 
@@ -67,7 +69,7 @@ class BooksController {
         return "redirect:/"
     }
 
-    @PostMapping("/books/{id}")
+    @PostMapping("/books/{id}") @PreAuthorize("hasAnyAuthority('admin', 'salesman')")
     fun editBook(
         @PathVariable(name = "id") id: Int,
         @Valid book: Book, bindingResult: BindingResult,
@@ -84,7 +86,7 @@ class BooksController {
         return "redirect:/"
     }
 
-    @GetMapping("/books/{id}/delete")
+    @GetMapping("/books/{id}/delete") @PreAuthorize("hasAnyAuthority('admin', 'salesman')")
     fun deleteBook(@PathVariable(name = "id") id: Int): String {
         booksRepository.deleteById(id)
         return "redirect:/"
@@ -93,7 +95,7 @@ class BooksController {
     // ---
 
     @OptIn(ExperimentalStdlibApi::class)
-    @GetMapping("/book-rental/{id}")
+    @GetMapping("/book-rental/{id}") @PreAuthorize("hasAnyAuthority('admin', 'user')")
     fun getBookRental(
         @PathVariable(name = "id") id: Int,
         model: Model,
@@ -111,7 +113,7 @@ class BooksController {
         return "books/BookRental"
     }
 
-    @GetMapping("/book-rental/new")
+    @GetMapping("/book-rental/new") @PreAuthorize("hasAnyAuthority('admin', 'user')")
     fun addBookRental(bookRental: BookRental, model: Model): String {
         val books = booksRepository.findAll()
         val users = usersRepository.findAll()
@@ -121,7 +123,7 @@ class BooksController {
         return "books/NewBookRental"
     }
 
-    @PostMapping("/book-rental")
+    @PostMapping("/book-rental") @PreAuthorize("hasAnyAuthority('admin', 'user')")
     fun addBookRental(
         @Valid bookRental: BookRental, bindingResult: BindingResult,
         model: Model
@@ -138,7 +140,7 @@ class BooksController {
         return "redirect:/"
     }
 
-    @PostMapping("/book-rental/{id}")
+    @PostMapping("/book-rental/{id}") @PreAuthorize("hasAnyAuthority('admin', 'user')")
     fun editBookRental(
         @PathVariable(name = "id") id: Int,
         @Valid bookRental: BookRental, bindingResult: BindingResult,
@@ -160,7 +162,7 @@ class BooksController {
         return "redirect:/"
     }
 
-    @GetMapping("/book-rental/{id}/delete")
+    @GetMapping("/book-rental/{id}/delete") @PreAuthorize("hasAnyAuthority('admin', 'user')")
     fun deleteBookRental(@PathVariable(name = "id") id: Int): String {
         bookRentalRepository.deleteById(id)
         return "redirect:/"
