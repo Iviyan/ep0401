@@ -9,7 +9,7 @@ import javax.persistence.*
 class Passport(
 
     @Column(name = "id") @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int = 0,
+    override var id: Int = 0,
 
     @Column(name = "serial")
     var serial: String = "",
@@ -28,7 +28,7 @@ class Passport(
 
     @Column(name = "patronymic")
     var patronymic: String? = null,
-)
+) : ModelBase<Int>
 
 @Repository
 interface PassportsRepository : CrudRepository<Passport, Int>

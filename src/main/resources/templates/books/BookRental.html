@@ -41,14 +41,14 @@
             <label >Выбор книги</label>
             <div th:if="${#fields.hasErrors('book')}" th:errors="*{book}" class="invalid-feedback"></div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Дата начала</label>
+        <div class="form-floatingmb-3">
             <input class="form-control" th:field="*{startDate}">
+            <label type="date" class="form-label">Дата начала</label>
             <div th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}" class="invalid-feedback"></div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Дата конца</label>
+        <div class="form-floating mb-3">
             <input class="form-control" th:field="*{endDate}">
+            <label type="date" class="form-label">Дата конца</label>
             <div th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}" class="invalid-feedback"></div>
         </div>
         <button type="submit" class="btn btn-outline-primary">Изменить</button>

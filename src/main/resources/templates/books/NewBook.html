@@ -22,31 +22,53 @@
 <div class="px-5 mt-3">
 
     <form method="post" action="/books" th:object="${book}">
-        <!--<input type="hidden" th:field="*{id}">-->
-        <div class="mb-3">
-            <label class="form-label">Название</label>
+        <div class="form-floating mb-3">
             <input class="form-control" th:field="*{title}">
+            <label class="form-label">Название</label>
             <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="invalid-feedback"></div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Автор</label>
-            <input class="form-control" th:field="*{author}">
+        <div class="form-floating mb-3">
+            <select class="form-select" th:field="*{author}">
+                <option th:each="el : ${authors}" th:value="${el.id}" th:text="${el.name}"></option>
+            </select>
+            <label>Автор</label>
             <div th:if="${#fields.hasErrors('author')}" th:errors="*{author}" class="invalid-feedback"></div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Количество страниц</label>
+        <div class="form-floating mb-3">
             <input class="form-control" th:field="*{pageCount}">
+            <label class="form-label">Количество страниц</label>
             <div th:if="${#fields.hasErrors('pageCount')}" th:errors="*{pageCount}" class="invalid-feedback"></div>
         </div>
-        <div class="mb-3">
+        <div class="form-floating mb-3">
+            <input type="date" class="form-control" th:field="*{releaseDate}">
             <label class="form-label">Дата выпуска</label>
-            <input class="form-control" th:field="*{releaseDate}">
             <div th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}" class="invalid-feedback"></div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Описание</label>
+        <div class="form-floating mb-3">
             <textarea class="form-control" th:field="*{description}"></textarea>
+            <label class="form-label">Описание</label>
             <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="invalid-feedback"></div>
+        </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" th:field="*{category}">
+                <option th:each="el : ${categories}" th:value="${el.id}" th:text="${el.name}"></option>
+            </select>
+            <label>Категория</label>
+            <div th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="invalid-feedback"></div>
+        </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" th:field="*{language}">
+                <option th:each="el : ${languages}" th:value="${el.id}" th:text="${el.name}"></option>
+            </select>
+            <label>Язык</label>
+            <div th:if="${#fields.hasErrors('language')}" th:errors="*{language}" class="invalid-feedback"></div>
+        </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" th:field="*{country}">
+                <option th:each="el : ${countries}" th:value="${el.id}" th:text="${el.name}"></option>
+            </select>
+            <label>Страна</label>
+            <div th:if="${#fields.hasErrors('country')}" th:errors="*{country}" class="invalid-feedback"></div>
         </div>
         <button type="submit" class="btn btn-outline-primary" >Добавить</button>
     </form>

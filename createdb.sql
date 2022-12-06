@@ -6,7 +6,7 @@ create table roles
     name varchar(100) not null unique
 );
 
-insert into roles(id, name) values (1, 'admin'), (2, 'user');
+insert into roles(id, name) values (1, 'admin'), (2, 'user'), (3, 'salesman');
 
 create table passports
 (
@@ -29,21 +29,61 @@ create table users
     registration_date timestamptz not null
 );
 
-/*create table user_roles
+create table authors
 (
-    user_id int references users(id),
-    role_id int references roles(id),
-    primary key (user_id, role_id)
-);*/
+    id serial primary key,
+    name varchar(100) not null unique
+);
+
+create table countries
+(
+    id serial primary key,
+    name varchar(100) not null unique
+);
+
+create table languages
+(
+    id serial primary key,
+    name varchar(100) not null unique
+);
+
+create table genres
+(
+    id serial primary key,
+    name varchar(100) not null unique
+);
+
+create table categories
+(
+    id serial primary key,
+    name varchar(100) not null unique
+);
+
+create table selections
+(
+    id serial primary key,
+    creation_date date not null,
+    name varchar(100) not null unique
+);
 
 create table books
 (
     id serial primary key,
     title varchar(200) not null,
-    author varchar(100) not null,
+    author_id int not null references authors(id),
     page_count int not null,
     release_date date not null,
-    description text not null default ''
+    description text not null default '',
+    category_id int not null references categories(id),
+    language_id int not null references languages(id),
+    country_id int not null references countries(id)
+);
+
+create table book_genres
+(
+    book_id int references books(id),
+    genre_id int references genres(id),
+    primary key (book_id, genre_id)
 );
 
 create table book_rental
@@ -55,21 +95,24 @@ create table book_rental
     end_date date not null
 );
 
+create table selection_books
+(
+    selection_id int references selections(id),
+    book_id int references books(id),
+    primary key (selection_id, book_id)
+);
 
+create table suppliers
+(
+    id serial primary key,
+    inn varchar(12) not null unique,
+    name varchar(100) not null
+);
 
-/*insert into books(title, author, page_count, release_date) values ('123', 'abc', 1, '01.01.2000');
-
-insert into book_rental(client_id, book_id, start_date, end_date)
-VALUES (2, 1, '01.01.2022', '10.01.2022');
-
-insert into passports(serial, number, first_name, last_name, patronymic)
-VALUES ('1234', '567890', 'Иван', 'Иванов', 'Иванович')
-
-
-
-select * from users;
-select * from passports;
-select * from roles;
-insert into roles(id, name) values (1, 'admin'), (2, 'user'), (3, 'salesman');
-insert into users(login, password, passport_id, role_id, registration_date)
-VALUES ('admin', 'admin', 1, 1, '01.01.2022');*/
+create table shipments
+(
+    id serial primary key,
+    supplier_id int not null references suppliers(id),
+    book_id int not null references books(id),
+    datetime timestamptz not null
+);

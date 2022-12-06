@@ -23,34 +23,84 @@
 <div class="px-5 mt-3" th:if="${model.isPresent()}">
 
     <form method="post" th:action="'/books/' + ${book.id}" th:object="${book}">
-        <div class="mb-3">
-            <label class="form-label">Название</label>
+        <div class="form-floating mb-3">
             <input class="form-control" th:field="*{title}">
+            <label class="form-label">Название</label>
             <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="invalid-feedback"></div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Автор</label>
-            <input class="form-control" th:field="*{author}">
+        <div class="form-floating mb-3">
+            <select class="form-select" th:field="*{author}">
+                <option th:each="el : ${authors}" th:value="${el.id}" th:text="${el.name}"></option>
+            </select>
+            <label>Автор</label>
             <div th:if="${#fields.hasErrors('author')}" th:errors="*{author}" class="invalid-feedback"></div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Количество страниц</label>
+        <div class="form-floating mb-3">
             <input class="form-control" th:field="*{pageCount}">
+            <label class="form-label">Количество страниц</label>
             <div th:if="${#fields.hasErrors('pageCount')}" th:errors="*{pageCount}" class="invalid-feedback"></div>
         </div>
-        <div class="mb-3">
+        <div class="form-floating mb-3">
+            <input type="date" class="form-control" th:field="*{releaseDate}">
             <label class="form-label">Дата выпуска</label>
-            <input class="form-control" th:field="*{releaseDate}">
             <div th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}" class="invalid-feedback"></div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Описание</label>
+        <div class="form-floating mb-3">
             <textarea class="form-control" th:field="*{description}"></textarea>
+            <label class="form-label">Описание</label>
             <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="invalid-feedback"></div>
         </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" th:field="*{category}">
+                <option th:each="el : ${categories}" th:value="${el.id}" th:text="${el.name}"></option>
+            </select>
+            <label>Категория</label>
+            <div th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="invalid-feedback"></div>
+        </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" th:field="*{language}">
+                <option th:each="el : ${languages}" th:value="${el.id}" th:text="${el.name}"></option>
+            </select>
+            <label>Язык</label>
+            <div th:if="${#fields.hasErrors('language')}" th:errors="*{language}" class="invalid-feedback"></div>
+        </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" th:field="*{country}">
+                <option th:each="el : ${countries}" th:value="${el.id}" th:text="${el.name}"></option>
+            </select>
+            <label>Страна</label>
+            <div th:if="${#fields.hasErrors('country')}" th:errors="*{country}" class="invalid-feedback"></div>
+        </div>
+
         <button type="submit" class="btn btn-outline-primary">Изменить</button>
         <a class="btn btn-outline-danger ms-3" th:href="'/books/' + ${book.id} + '/delete'">Удалить</a>
     </form>
+
+    <fieldset class="mb-3 mt-4">
+        <legend class="col-form-label">Жанры</legend>
+
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center"
+                th:each="genre : ${book.genres}">
+                [[${genre.name}]]
+                <!--<a class="btn btn-outline-danger" th:href="'/books/' + ${book.id} + '/genres/' + ${el.id} + '/delete'">Удалить</a>-->
+                <a class="btn btn-outline-danger" style="padding: 0px 2px 2px;"
+                   th:href="'/books/' + ${book.id} + '/genres/' + ${genre.id} + '/delete'">
+                    <svg fill="currentColor" width="16" height="16"><use href="#icon-trash" /></svg>
+                </a>
+            </li>
+        </ul>
+
+        <form th:action="'/books/' + ${book.id} + '/genres'" method="post" class="d-flex mt-2">
+            <div class="form-floating w-50">
+                <select class="form-select" name="genreId">
+                    <option th:each="el : ${genres}" th:value="${el.id}" th:text="${el.name}"></option>
+                </select>
+                <label>Жанр</label>
+            </div>
+            <button type="submit" class="btn btn-outline-success p-2 flex-shrink-1 ms-2">Добавить</button>
+        </form>
+    </fieldset>
 </div>
 </body>
 </html>

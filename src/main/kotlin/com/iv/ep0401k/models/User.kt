@@ -1,7 +1,6 @@
 package com.iv.ep0401k.models
 
 import org.springframework.data.repository.CrudRepository
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -15,7 +14,7 @@ import javax.validation.constraints.Size
 class User (
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "id")
-    var id: Int = 0,
+    override var id: Int = 0,
 
     @Column(name = "login")
     var login: String = "",
@@ -44,7 +43,7 @@ class User (
 
     @OneToMany(mappedBy = "user")
     var rental: MutableSet<BookRental>? = null,
-) {
+) : ModelBase<Int> {
     val fullName: String get() = "${passport.firstName} ${passport.lastName}" + (if (passport.patronymic != null) " ${passport.patronymic}" else "")
 }
 

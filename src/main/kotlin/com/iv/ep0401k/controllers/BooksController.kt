@@ -3,7 +3,6 @@ package com.iv.ep0401k.controllers
 import com.iv.ep0401k.models.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
-import org.springframework.security.access.annotation.Secured
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -17,14 +16,27 @@ import kotlin.jvm.optionals.getOrNull
 @Controller
 class BooksController {
 
-    @Autowired
-    lateinit var booksRepository: BooksRepository
+    @Autowired lateinit var booksRepository: BooksRepository
+    @Autowired lateinit var bookRentalRepository: BookRentalRepository
+    @Autowired lateinit var authorsRepository: AuthorsRepository
+    @Autowired lateinit var categoriesRepository: CategoriesRepository
+    @Autowired lateinit var genresRepository: GenresRepository
+    @Autowired lateinit var languagesRepository: LanguagesRepository
+    @Autowired lateinit var countriesRepository: CountriesRepository
 
-    @Autowired
-    lateinit var usersRepository: UsersRepository
+    fun loadDependencies(model: Model) {
+        val authors = authorsRepository.findAll()
+        val categories = categoriesRepository.findAll()
+        val genres = genresRepository.findAll()
+        val languages = languagesRepository.findAll()
+        val countries = countriesRepository.findAll()
 
-    @Autowired
-    lateinit var bookRentalRepository: BookRentalRepository
+        model.addAttribute("authors", authors)
+        model.addAttribute("categories", categories)
+        model.addAttribute("genres", genres)
+        model.addAttribute("languages", languages)
+        model.addAttribute("countries", countries)
+    }
 
     @GetMapping("/") @PreAuthorize("hasAnyAuthority('admin', 'user', 'salesman')")
     fun index(
@@ -54,15 +66,24 @@ class BooksController {
         model.addAttribute("model", book)
         model.addAttribute("book", book.getOrNull())
         if (book.isEmpty) response.status = HttpStatus.NOT_FOUND.value()
+
+        loadDependencies(model)
+
         return "books/Book"
     }
 
     @GetMapping("/books/new") @PreAuthorize("hasAnyAuthority('admin', 'salesman')")
-    fun addBook(book: Book): String = "books/NewBook"
+    fun addBook(book: Book, model: Model): String {
+        loadDependencies(model)
+        return "books/NewBook"
+    }
 
-    @PostMapping("/books") @Secured("admin", "salesman")
-    fun addBook(@Valid book: Book, bindingResult: BindingResult): String {
-        if (bindingResult.hasErrors()) return "books/NewBook"
+    @PostMapping("/books") @PreAuthorize("hasAnyAuthority('admin', 'salesman')")
+    fun addBook(@Valid book: Book, bindingResult: BindingResult, model: Model): String {
+        if (bindingResult.hasErrors()) {
+            loadDependencies(model)
+            return "books/NewBook"
+        }
 
         booksRepository.save(book)
 
@@ -77,10 +98,12 @@ class BooksController {
     ): String {
         if (bindingResult.hasErrors()) {
             model.addAttribute("model", Optional.of(book))
+            loadDependencies(model)
             return "books/Book"
         }
 
         book.id = id
+        book.genres = booksRepository.findById(id).orElseThrow().genres // TODO: replace it
         booksRepository.save(book)
 
         return "redirect:/"
@@ -89,83 +112,31 @@ class BooksController {
     @GetMapping("/books/{id}/delete") @PreAuthorize("hasAnyAuthority('admin', 'salesman')")
     fun deleteBook(@PathVariable(name = "id") id: Int): String {
         booksRepository.deleteById(id)
-        return "redirect:/"
+        return "redirect:/books/$id"
     }
 
-    // ---
-
-    @OptIn(ExperimentalStdlibApi::class)
-    @GetMapping("/book-rental/{id}") @PreAuthorize("hasAnyAuthority('admin', 'user')")
-    fun getBookRental(
-        @PathVariable(name = "id") id: Int,
-        model: Model,
-        response: HttpServletResponse
+    @PostMapping("/books/{bookId}/genres") @PreAuthorize("hasAnyAuthority('admin', 'salesman')")
+    fun addGenre(
+        @PathVariable(name = "bookId") bookId: Int,
+        @RequestParam genreId: Int
     ): String {
-        val books = booksRepository.findAll()
-        val users = usersRepository.findAll()
-        model.addAttribute("books", books)
-        model.addAttribute("users", users.map { UserDto.from(it) })
-
-        val bookRental = bookRentalRepository.findById(id)
-        model.addAttribute("model", bookRental)
-        model.addAttribute("bookRental", bookRental.getOrNull())
-        if (bookRental.isEmpty) response.status = HttpStatus.NOT_FOUND.value()
-        return "books/BookRental"
-    }
-
-    @GetMapping("/book-rental/new") @PreAuthorize("hasAnyAuthority('admin', 'user')")
-    fun addBookRental(bookRental: BookRental, model: Model): String {
-        val books = booksRepository.findAll()
-        val users = usersRepository.findAll()
-        model.addAttribute("books", books)
-        model.addAttribute("users", users.map { UserDto.from(it) })
-
-        return "books/NewBookRental"
-    }
-
-    @PostMapping("/book-rental") @PreAuthorize("hasAnyAuthority('admin', 'user')")
-    fun addBookRental(
-        @Valid bookRental: BookRental, bindingResult: BindingResult,
-        model: Model
-    ): String {
-        val books = booksRepository.findAll()
-        val users = usersRepository.findAll()
-        model.addAttribute("books", books)
-        model.addAttribute("users", users.map { UserDto.from(it) })
-
-        if (bindingResult.hasErrors()) return "books/NewBookRental"
-
-        bookRentalRepository.save(bookRental)
-
-        return "redirect:/"
-    }
-
-    @PostMapping("/book-rental/{id}") @PreAuthorize("hasAnyAuthority('admin', 'user')")
-    fun editBookRental(
-        @PathVariable(name = "id") id: Int,
-        @Valid bookRental: BookRental, bindingResult: BindingResult,
-        model: Model
-    ): String {
-        val books = booksRepository.findAll()
-        val users = usersRepository.findAll()
-        model.addAttribute("books", books)
-        model.addAttribute("users", users.map { UserDto.from(it) })
-
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("model", Optional.of(bookRental))
-            return "books/BookRental"
+        val book = booksRepository.findById(bookId).orElseThrow()
+        if (!book.genres!!.any { it.id == genreId }) {
+            book.genres!!.add(Genre(id = genreId))
+            booksRepository.save(book)
         }
-
-        bookRental.id = id
-        bookRentalRepository.save(bookRental)
-
-        return "redirect:/"
+        return "redirect:/books/$bookId"
     }
 
-    @GetMapping("/book-rental/{id}/delete") @PreAuthorize("hasAnyAuthority('admin', 'user')")
-    fun deleteBookRental(@PathVariable(name = "id") id: Int): String {
-        bookRentalRepository.deleteById(id)
-        return "redirect:/"
+    @GetMapping("/books/{bookId}/genres/{genreId}/delete") @PreAuthorize("hasAnyAuthority('admin', 'salesman')")
+    fun deleteGenre(
+        @PathVariable(name = "bookId") bookId: Int,
+        @PathVariable(name = "genreId") genreId: Int,
+    ): String {
+        val book = booksRepository.findById(bookId).orElseThrow()
+        book.genres!!.removeIf { it.id == genreId }
+        booksRepository.save(book)
+        return "redirect:/books/$bookId"
     }
 
 }

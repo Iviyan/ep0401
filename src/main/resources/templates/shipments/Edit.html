@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+            crossorigin="anonymous"></script>
+
+    <style> .invalid-feedback {
+        display: block;
+    } </style>
+</head>
+
+<body>
+<div th:insert="Templates :: header"></div>
+
+<h1 class="fs-2 text-center" th:text="${model.isPresent()} ? 'Поставка' : 'Поставка не найдена"></h1>
+
+<div class="px-5 mt-3" th:if="${model.isPresent()}"
+     th:with="uri=${T(com.iv.ep0401k.utils.StringUtils).Companion.removeTrailingSlash(#httpServletRequest.requestURI)}">
+
+    <form method="post" action="" th:object="${element}">
+        <div class="form-floating mb-3">
+            <select class="form-select" title="Please select book" th:field="*{supplier}">
+                <!--/*@thymesVar id="supplier" type="com.iv.ep0401k.models.Supplier"*/-->
+                <option th:each="supplier : ${suppliers}" th:value="${supplier.id}" th:text="${supplier.name}"></option>
+            </select>
+            <label>Поставщик</label>
+            <div th:if="${#fields.hasErrors('book')}" th:errors="*{book}" class="invalid-feedback"></div>
+        </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" title="Please select book" th:field="*{book}">
+                <!--/*@thymesVar id="book" type="com.iv.ep0401k.models.Book"*/-->
+                <option th:each="book : ${books}" th:value="${book.id}" th:text="${book.title}"></option>
+            </select>
+            <label>Книга</label>
+            <div th:if="${#fields.hasErrors('book')}" th:errors="*{book}" class="invalid-feedback"></div>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="datetime-local" class="form-control" th:field="*{datetime}">
+            <label class="form-label">Дата и время</label>
+            <div th:if="${#fields.hasErrors('datetime')}" th:errors="*{datetime}" class="invalid-feedback"></div>
+        </div>
+
+        <button type="submit" class="btn btn-outline-primary">Изменить</button>
+        <a class="btn btn-outline-danger ms-3" th:href="${uri} + '/delete'">Удалить</a>
+        <a class="btn btn-outline-secondary ms-3" href=".">Назад</a>
+    </form>
+</div>
+</body>
+</html>
